@@ -4,7 +4,7 @@
 
 <head>
     <meta charset='utf-8'/>
-    <title>潜伏之赤途</title>
+    <title>小黑屋</title>
     <meta name='viewport'
           content='width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'
     />
@@ -297,14 +297,8 @@
         //暴露出来的click
         window["gameMain"] = new Main();
 
-        // allow launching custom game
-        var urlparams = new URLSearchParams(window.location.search);
         var game_guid = '4fcc10ed318a13bdb8c53a89fb5bf893';
-        var game_ver = '2028';
-        if (urlparams.has('guid') && urlparams.has('ver')) {
-            game_guid = urlparams.get('guid');
-            game_ver = urlparams.get('ver');
-        }
+        var game_ver = '2055';
 
         start(game_guid, game_ver,'isFlash','','32','','1');
 
@@ -312,23 +306,20 @@
 
     OrgWebFree.prototype.getFreeTime = function(t){t()}
     GloableData.prototype.checkAllowSave = function(){ return !0 }
-    var urlparams = new URLSearchParams(window.location.search);
-    if (urlparams.has('guid') && urlparams.has('ver')) {
-            custom_game = true;
-    }
-    if (!custom_game) {
-        // 赤途 game patch
-        var _f = function (){
-        var patch = function () {
-            EventCenter.removeEventListener(GameEventConstant.INIT_DMAIN_COMPLETE, this, patch)
-            GloableData.getInstance().gameMainData.stories[26]._events[334].Code = 206;
-            GloableData.getInstance().gameMainData.stories[55]._events[147].Code = 206;
-            GloableData.getInstance().gameMainData.stories[31]._events[455].Code = 206;
-            GloableData.getInstance().gameMainData.stories[62]._events[0].Argv[0] = "26";
+
+    // patch game map loader
+    var _mapbinpatch = function _z() {
+        const urlparams = new URLSearchParams(window.location.search);
+        var mapfile = "https://cgv2.66rpg.com/api/oapi_map.php?action=create_bin&guid=4fcc10ed318a13bdb8c53a89fb5bf893&version=2055&quality=32";
+        if (urlparams.has("map")) {
+            mapfile = urlparams.get("map");
         }
-        EventCenter.addEventListener(GameEventConstant.INIT_DMAIN_COMPLETE, this, patch)
-        }();
-    }
+        const oldProto = LoadMapBin.prototype;
+        LoadMapBin = function (){
+            this.urlmap = mapfile;
+        };
+        LoadMapBin.prototype = oldProto;
+    }();
 
 
     initGame();
